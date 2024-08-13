@@ -1,0 +1,191 @@
+body {
+    font-family: Arial, sans-serif;
+    color: rgba(0,0,0,.5);
+    text-align: center;
+    
+    
+    top: 15%;
+	background: linear-gradient(to right, rgb(43, 141, 216) , rgb(2, 17, 61)); /* Standard syntax */
+  }
+
+@keyframes backgroundFade {
+    0% {
+      background-color: #032B44; /* Azul escuro */
+    }
+    50% {
+      background-color: #212121; /* Cinza escuro */
+    }
+    100% {
+      background-color: #000; /* Preto */
+    }
+  }
+
+form {
+  width: 300px;
+  margin: 200px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+form div {
+  margin-bottom: 20px;
+  text-align: left;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+form label {
+  display: block;
+  margin-bottom: 10px;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+form input {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  animation: focusIn 0.5s ease-in-out;
+}
+
+@keyframes focusIn {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+form button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+h5 {
+  margin-top: 20px;
+  text-align: center;
+  animation: fadeOut 1s ease-in-out;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+  
+  form {
+    width: 300px;
+    margin: 200px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  form div {
+    margin-bottom: 20px;
+    text-align: left;
+    animation: slideIn 0.5s ease-in-out;
+  }
+  
+  @keyframes slideIn {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  form label {
+    display: block;
+    margin-bottom: 10px;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  
+  form input {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    animation: focusIn 0.5s ease-in-out;
+  }
+  
+  @keyframes focusIn {
+    0% {
+      box-shadow: none;
+    }
+    100% {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    animation: bounce 1s ease-in-out infinite;
+  }
+  
+  h5 {
+    margin-top: 20px;
+    text-align: center;
+    animation: fadeOut 1s ease-in-out;
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
