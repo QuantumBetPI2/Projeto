@@ -1,0 +1,91 @@
+.body
+{text-align: center;}
+.card {
+  /* Tamanho do card */
+    width: 200px;
+    height: 200px;
+    
+    /* Cor de fundo e borda */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    
+    /* Arredondamento das bordas */
+    border-radius: 10px;
+    
+    /* Sombra */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    
+    /* Padding interno */
+    padding: 20px;
+    
+    /* Margem externa */
+    margin: 20px;
+  }
+  
+  /* Estilos para a imagem do card */
+  .card-image {
+    /* Tamanho da imagem */
+    width: 100%;
+    height: 150px;
+    
+    /* Ajuste da imagem */
+    object-fit: cover;
+    
+    /* Arredondamento das bordas */
+    border-radius: 10px 10px 0 0;
+  }
+  
+  /* Estilos para o conteúdo do card */
+  .card-content {
+    /* Padding interno */
+    padding: 20px;
+  }
+  
+  /* Estilos para o título do card */
+  .card-title {
+    /* Tamanho da fonte */
+    font-size: 24px;
+    
+    /* Peso da fonte */
+    font-weight: bold;
+    
+    /* Margem inferior */
+    margin-bottom: 10px;
+  }
+  
+  /* Estilos para a descrição do card */
+  .card-text {
+    /* Tamanho da fonte */
+    font-size: 16px;
+    
+    /* Cor do texto */
+    color: #666;
+    
+    /* Margem inferior */
+    margin-bottom: 20px;
+  }
+  
+  /* Estilos para o botão do card */
+  .card-button {
+    /* Cor de fundo */
+    background-color: #4CAF50;
+    
+    /* Cor do texto */
+    color: #fff;
+    
+    /* Padding interno */
+    padding: 10px 20px;
+    
+    /* Bordas */
+    border: none;
+    border-radius: 5px;
+    
+    /* Cursor */
+    cursor: pointer;
+  }
+  
+  /* Estilos para o botão do card em hover */
+  .card-button:hover {
+    /* Cor de fundo em hover */
+    background-color: #3e8e41;
+  }
