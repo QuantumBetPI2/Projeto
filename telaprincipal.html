@@ -4,47 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Bet</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="stylePrincipal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 </head>
 <body>
     <header>
         <h1>Quantum Bet</h1>
         <div class="profile-icon">
-            <img src="profile-icon.png" alt="Ícone de Perfil">
+        
         </div>
+    <div class="login-bar">
+        <a href="telalogin.html"><button type="submit">Login</button></a>
+    </div>
+        
+    <div class="cadastro-bar">
+        <a href="teladecadastro.html"><button type="submit">Cadastre-se</button></a>
+    </div>
     </header>
-    
+
+    <div>
+        <div class="side-panel">
+            <ul>
+                <div> 
+                    <h2>Esportes</h2>
+            </ul>
+        </div>
+    </div>
+
     <main>
         
-        <div class="login-bar">
-          <a href="telalogin.html"><button type="submit">Login</button></a>
-        </div>
         
-        <div class="search-bar">
-            <a href="teladecadastro.html"><button type="submit">Cadastre-se</button></a>
-        </div>
 
-        <div class="profile-icon">
+        <div class="profile-icon" style="display: none;">
          <img src="" alt="Perfil" width="40" height="40">
         </div>
 
-        <form>
-            <input type="search" id="search" name="search" placeholder="Buscar...">
+        <div class="search-bar">
+            <input type="search" class="search-bar" name="search" placeholder="Buscar...">
             <button type="submit">Buscar</button>
-        </form>
-
-        <div class="card">
+        </div>
+        
+        <!--<div class="card">
             <img src="imagem.jpg" alt="Imagem do card" class="card-image">
             <div class="card-content">
               <h2 class="card-title">Título do card</h2>
               <p class="card-text">Descrição do card</p>
               <button class="card-button">Botão do card</button>
             </div>
+        </div>-->
+         
+        <div> 
+            <div class="card">
+                <img src="unnamed.jpg" alt="Imagem do card" class="card-image">
+                <div class="card-content">
+                  <h2 class="card-title">Futebol</h2>
+                    <p class="card-text">Acompanhe os jogos de futebol ao vivo</p>
+                    <a href="teladefutebol.html"><button class="card-button">Acessar</button></a>
+                    
+
+
         </div>
+
+        
+        
     </main>
     
-    <footer>
-        <p>Todos os direitos reservados &copy; 2024 Quantum Bet</p>
-    </footer>
+      
+    <script src="telaprincipal.js"></script>
 </body>
+    
+<footer>
+    <p>Todos os direitos reservados &copy; 2024 Quantum Bet</p>
+</footer>
+
 </html>
