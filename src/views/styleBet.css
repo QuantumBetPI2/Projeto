@@ -1,0 +1,122 @@
+/* Reset de Estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos do Corpo */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #1b263b, #0d1b2a);
+    color: #ffffff;
+}
+
+header {
+    padding: 20px;
+    background: #1b263b;
+    width: 100%;
+    text-align: center;
+    color: #10b981; /* Cor do cabeçalho ajustada */
+}
+
+header h1 {
+    font-size: 2.5rem;
+}
+
+/* Detalhes do Evento */
+.event-details {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.event-details h2 {
+    font-size: 1.8rem;
+    color: #10b981; /* Cor do título ajustada */
+    margin-bottom: 10px;
+}
+
+/* Seção de Aposta */
+.bet-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.bet-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #10b981; /* Cor do título da seção de apostas ajustada */
+}
+
+.bet-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.bet-options button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #10b981; /* Cor do botão ajustada */
+    color: #ffffff; /* Texto do botão em branco */
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.bet-options button.selected {
+    background: #059669; /* Cor do botão selecionado */
+}
+
+.bet-options button:hover {
+    background: #059669; /* Cor ao passar o mouse */
+}
+
+#betAmount {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2); /* Fundo dos inputs de valor */
+    color: #ffffff; /* Texto do input em branco */
+}
+
+/* Botão de Aposta */
+.bet-section button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #10b981; /* Cor do botão de aposta ajustada */
+    color: #ffffff; /* Texto do botão em branco */
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.bet-section button:hover {
+    background: #059669; /* Cor ao passar o mouse no botão de aposta */
+}
+
+/* Mensagem de Saldo Insuficiente */
+#balanceMessage {
+    color: #f44336; /* Cor da mensagem de erro */
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+#addCreditsBtn {
+    background: #f44336; /* Cor do botão de adicionar créditos */
+    color: white;
+    margin-top: 10px;
+}

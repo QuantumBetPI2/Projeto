@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import OracleDB from "oracledb"; // Certifique-se de que você tem o módulo oracledb instalado
+import OracleDB from "oracledb";
+import jwt from "jsonwebtoken";
 
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
@@ -12,115 +13,212 @@ async function connectToDatabase() {
 
 export namespace FinancialManager {
     export const addFunds = async (req: Request, res: Response): Promise<void> => {
-        const { user_id, amount } = req.body;
-
-        // Validação dos parâmetros
-        if (!user_id|| !amount) {
-            res.status(400).json({ message: 'userId e amount são obrigatórios.' });
+        const { amount } = req.body; // Apenas `amount` agora é recebido
+        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
+    
+        console.log("Token recebido no cabeçalho:", req.headers.authorization);
+        console.log("Token extraído:", token);
+    
+        if (!token) {
+            res.status(401).json({ message: "Token não fornecido." });
             return;
         }
-
-        let connection;
-
+    
         try {
-            connection = await connectToDatabase();
-
-            // Insere os fundos na tabela FUNDS
-            const result = await connection.execute(
-                `INSERT INTO FUNDS (user_id, amount) VALUES (:user_id, :amount)`,
-                { user_id, amount },
-                { autoCommit: true }
-            );
-
-            console.log("Fundos adicionados com sucesso!", result.rowsAffected);
-            res.status(201).json({ message: 'Fundos adicionados com sucesso!' });
-        } catch (error) {
-            console.error("Erro ao adicionar fundos:", error);
-            res.status(500).json({ message: 'Erro ao adicionar fundos.' });
-        } finally {
-            // Certifique-se de fechar a conexão se estiver aberta
-            if (connection) {
-                try {
-                    await connection.close();
-                } catch (closeError) {
-                    console.error('Erro ao fechar a conexão:', closeError);
+            const secretKey = "pi_auth";
+            console.log("Chave secreta usada para validação:", secretKey);
+    
+            const decoded = jwt.verify(token, secretKey) as { id: number };
+            console.log("Decodificação bem-sucedida do token:", decoded);
+    
+            const user_id = decoded.id;
+    
+            if (!amount || amount <= 0) {
+                res.status(400).json({ message: "Valor inválido para adicionar fundos." });
+                return;
+            }
+    
+            let connection;
+    
+            try {
+                connection = await connectToDatabase();
+    
+                const result = await connection.execute(
+                    `INSERT INTO FUNDS (user_id, amount) VALUES (:user_id, :amount)`,
+                    { user_id, amount },
+                    { autoCommit: true }
+                );
+    
+                console.log("Fundos adicionados com sucesso! Linhas afetadas:", result.rowsAffected);
+                res.status(201).json({ message: "Fundos adicionados com sucesso!" });
+            } catch (error) {
+                console.error("Erro ao adicionar fundos:", error);
+                res.status(500).json({ message: "Erro ao adicionar fundos." });
+            } finally {
+                if (connection) {
+                    try {
+                        await connection.close();
+                    } catch (closeError) {
+                        console.error("Erro ao fechar a conexão:", closeError);
+                    }
                 }
             }
+        } catch (err) {
+            console.error("Erro ao verificar o token:", err);
+            res.status(403).json({ message: "Token inválido ou expirado." });
         }
     };
 
-    interface FundsResult {
-        TOTALFUNDS: number | null; // O valor pode ser nulo se não houver fundos
-    }
-
-    
-   
     export const withdrawFunds = async (req: Request, res: Response): Promise<void> => {
-        const { user_id, amount, account_number } = req.body; // account_number é a conta corrente para a qual o valor será transferido
+        const { amount, bankDetails } = req.body;
+        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
     
-        // Verificar se user_id, amount e account_number estão presentes
-        if (!user_id || !amount || amount <= 0 || !account_number) {
-            res.status(400).json({ message: 'user_id, amount e account_number são obrigatórios e amount deve ser maior que 0.' });
+        if (!token) {
+            res.status(401).json({ message: "Token não fornecido." });
             return;
         }
     
-        let connection;
-    
         try {
-            connection = await connectToDatabase();
+            const secretKey = "pi_auth";
+            const decoded = jwt.verify(token, secretKey) as { id: number };
+            const user_id = decoded.id;
     
-            console.log(`Tentando sacar fundos. user_id: ${user_id}, amount: ${amount}, account_number: ${account_number}`);
+            console.log(`Token decodificado com sucesso. ID do usuário: ${user_id}`);
     
-            // Verificar o saldo total do usuário
-            const fundsResult = await connection.execute<{ TOTALFUNDS: number }>(
-                `SELECT SUM(amount) FROM FUNDS WHERE user_id = :user_id`,
-                [user_id]
-            );
-    
-            console.log('Resultado da consulta de fundos:', fundsResult);
-    
-            // Verifique se fundsResult e rows estão definidos
-            if (!fundsResult || !fundsResult.rows || fundsResult.rows.length === 0) {
-                res.status(404).json({ message: 'Usuário não encontrado ou sem fundos.' });
+            if (!amount || amount <= 0) {
+                console.log(`Valor inválido para saque: ${amount}`);
+                res.status(400).json({ message: 'Valor inválido para saque.' });
                 return;
             }
     
-            const totalFunds = fundsResult.rows[0] || 0; // Obter o saldo total ou 0 se não houver
+            console.log(`Solicitação de saque recebida. Valor: R$ ${amount}, Detalhes Bancários: ${bankDetails}`);
     
-            console.log('TOTALFUNDS encontrado:', totalFunds);
+            let connection;
     
-            // Verifique se o saldo é suficiente
-            if (totalFunds < amount) {
-                res.status(400).json({ message: 'Saldo insuficiente para a retirada.' });
-                return;
-            }
+            try {
+                connection = await connectToDatabase();
+                console.log('Conexão com o banco de dados estabelecida com sucesso.');
     
-            // Inserir um registro de retirada com valor negativo
-            await connection.execute(
-                `UPDATE FUNDS SET amount = amount - :amount WHERE user_id = :user_id`,
-                {
-                    amount,
-                    user_id
-                },
-                { autoCommit: true }
-            );
-           
-            console.log(`Transferindo ${amount} para a conta ${account_number}.`);
+                // Definir o tipo para o resultado da consulta, que é um array de arrays de números
+                const result = await connection.execute(
+                    `SELECT amount FROM FUNDS WHERE user_id = :user_id`,
+                    { user_id }
+                ) as { rows: [number[]] }; // Definindo que rows é um array de arrays de números
     
-            res.json({ message: 'Retirada realizada com sucesso!' });
-        } catch (error) {
-            console.error('Erro ao tentar sacar fundos:', error);
-            res.status(500).json({ message: 'Erro ao processar a retirada de fundos.' });
-        } finally {
-
-            if (connection) {
-                try {
+                console.log(result); // Mostrar o resultado da consulta para depuração
+    
+                // Verificar se result.rows está definido e não está vazio
+                if (!result.rows?.length) {
+                    console.log(`Nenhum valor encontrado para o usuário com ID: ${user_id}`);
+                    res.status(400).json({ message: 'Usuário não encontrado ou saldo inexistente.' });
+                    return;
+                }
+    
+                // Acessar o saldo da primeira linha e primeira coluna
+                const currentBalance = result.rows[0][0]; // Acessando o valor do saldo
+    
+                if (currentBalance === undefined || typeof currentBalance !== 'number') {
+                    console.log(`Saldo inválido recuperado: ${currentBalance}`);
+                    res.status(500).json({ message: 'Erro ao recuperar o saldo do usuário.' });
+                    return;
+                }
+    
+                console.log(`Saldo atual do usuário (ID: ${user_id}): R$ ${currentBalance}`);
+    
+                if (currentBalance < amount) {
+                    console.log(`Saldo insuficiente para a retirada. Tentativa de saque: R$ ${amount}, Saldo disponível: R$ ${currentBalance}`);
+                    res.status(400).json({ message: 'Saldo insuficiente para a retirada.' });
+                    return;
+                }
+    
+                const newBalance = currentBalance - amount;
+    
+                console.log(`Processando saque... Novo saldo após o saque: R$ ${newBalance}`);
+    
+                await connection.execute(
+                    `UPDATE FUNDS SET amount = :newBalance WHERE user_id = :user_id`,
+                    { newBalance, user_id },
+                    { autoCommit: true }
+                );
+    
+                console.log(`Saque realizado com sucesso. Novo saldo: R$ ${newBalance}`);
+                res.status(200).json({ message: 'Saque realizado com sucesso!' });
+    
+            } catch (error) {
+                console.error('Erro ao processar o saque:', error);
+                res.status(500).json({ message: 'Erro ao processar o saque.' });
+            } finally {
+                if (connection) {
                     await connection.close();
-                } catch (closeError) {
-                    console.error('Erro ao fechar a conexão:', closeError);
+                    console.log('Conexão com o banco de dados fechada.');
                 }
             }
+        } catch (err) {
+            console.error('Erro ao verificar o token:', err);
+            res.status(403).json({ message: 'Token inválido ou expirado.' });
         }
     };
-    
+
+    export const getBalance = async (req: Request, res: Response): Promise<void> => {
+        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
+
+        if (!token) {
+            res.status(401).json({ message: "Token não fornecido." });
+            return;
+        }
+
+        try {
+            const secretKey = "pi_auth";
+            const decoded = jwt.verify(token, secretKey) as { id: number };
+            const user_id = decoded.id;
+
+            console.log(`Token decodificado com sucesso. ID do usuário: ${user_id}`);
+
+            let connection;
+
+            try {
+                connection = await connectToDatabase();
+                console.log('Conexão com o banco de dados estabelecida com sucesso.');
+
+                // Consultar o saldo do usuário
+                const result = await connection.execute(
+                    `SELECT amount FROM FUNDS WHERE user_id = :user_id`,
+                    { user_id }
+                ) as { rows: [number[]] };
+
+                // Verificar se a consulta retornou algum valor
+                if (!result.rows?.length) {
+                    console.log(`Nenhum saldo encontrado para o usuário com ID: ${user_id}`);
+                    res.status(404).json({ message: 'Usuário não encontrado ou saldo inexistente.' });
+                    return;
+                }
+
+                // Acessar o saldo da primeira linha e primeira coluna
+                const currentBalance = result.rows[0][0];
+
+                if (currentBalance === undefined || typeof currentBalance !== 'number') {
+                    console.log(`Saldo inválido recuperado: ${currentBalance}`);
+                    res.status(500).json({ message: 'Erro ao recuperar o saldo do usuário.' });
+                    return;
+                }
+
+                console.log(`Saldo atual do usuário (ID: ${user_id}): R$ ${currentBalance}`);
+
+                res.status(200).json({ balance: currentBalance });
+
+            } catch (error) {
+                console.error('Erro ao recuperar o saldo:', error);
+                res.status(500).json({ message: 'Erro ao recuperar o saldo.' });
+            } finally {
+                if (connection) {
+                    await connection.close();
+                    console.log('Conexão com o banco de dados fechada.');
+                }
+            }
+        } catch (err) {
+            console.error('Erro ao verificar o token:', err);
+            res.status(403).json({ message: 'Token inválido ou expirado.' });
+        }
+    };
 }
+

@@ -14,17 +14,17 @@ interface User {
   password: string;
 }
 
-// Função para conectar ao banco de dados
+// Função de conexão ao banco de dados
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
 }
 
-
+//Função para verificar se o banco de dados esta funcionando 
 export const checkDatabaseConnection = async (req: Request, res: Response) => {
   let connection;
 
@@ -62,7 +62,7 @@ export namespace AccountsHandler {
         try {
             connection = await connectToDatabase();
 
-            // Hash da senha antes de armazená-la
+            // Criação da senha hash
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const result = await connection.execute(
@@ -133,7 +133,7 @@ export namespace AccountsHandler {
                   { expiresIn: '1h' }
               );
   
-              console.log("Login bem-sucedido!", user);
+              console.log("Login bem-sucedido!", token);
   
               // Verificar se é o admin e redirecionar
               if (user.email === 'aDmin@gmail.com') {
@@ -160,6 +160,54 @@ export namespace AccountsHandler {
           }
       }
   };
+
+  export const getProfile = async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers['authorization']?.split(' ')[1]; // Supondo que o token esteja no formato Bearer
+
+    if (!token) {
+        res.status(401).send('Token não fornecido.');
+        return;
+    }
+
+    try {
+        
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+
+        const userId = decoded.id;
+
+        let connection;
+        try {
+            connection = await connectToDatabase();
+
+            const result = await connection.execute(
+                `SELECT completeName, id FROM ACCOUNTS WHERE id = :userId`,
+                { userId }
+            );
+
+            if (result.rows && result.rows.length > 0) {
+                const row = result.rows[0] as (string | number)[];
+                const userCompleteName = row[0];
+                const userIdFromDb = row[1];  // O id do usuário recuperado do banco
+
+                // Retorna o nome completo e o id do usuário
+                res.status(200).json({ completeName: userCompleteName, id: userIdFromDb });
+            } else {
+                res.status(404).send('Usuário não encontrado.');
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados do usuário:", error);
+            res.status(500).send('Erro ao buscar dados do usuário.');
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    } catch (error) {
+        console.error("Erro ao verificar o token:", error);
+        res.status(401).send('Token inválido.');
+    }
+};
+
 
 
 
