@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Nome completo não encontrado nos dados:', data);
             }
 
-            if (data.completeName === "Admin") {
+            if (data.completeName === "Admin_PI") {
                 adminButton.style.display = 'inline-block'; // Exibe o botão de admin
             } else {
                 adminButton.style.display = 'none'; // Esconde o botão de admin
