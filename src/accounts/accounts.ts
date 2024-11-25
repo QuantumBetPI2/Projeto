@@ -14,17 +14,17 @@ interface User {
   password: string;
 }
 
-// Função de conexão ao banco de dados
+// Função para conectar ao banco de dados
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
 }
 
-//Função para verificar se o banco de dados esta funcionando 
+
 export const checkDatabaseConnection = async (req: Request, res: Response) => {
   let connection;
 
@@ -50,28 +50,28 @@ export const checkDatabaseConnection = async (req: Request, res: Response) => {
 export namespace AccountsHandler {
     // Handler para registrar um novo usuário
     export const registerHandler = async (req: Request, res: Response): Promise<void> => {
-        const { completeName, email, password } = req.body;
-
+        const { completeName, email, password, birthdate } = req.body; // birthdate recebido, mas não utilizado
+    
         if (!completeName || !email || !password) {
             res.status(400).send('Requisição inválida - Parâmetros faltando.');
             return;
         }
-
+    
         let connection;
-
+    
         try {
             connection = await connectToDatabase();
-
-            // Criação da senha hash
+    
+            // Hash da senha antes de armazená-la
             const hashedPassword = await bcrypt.hash(password, 10);
-
-            const result = await connection.execute(
+    
+            await connection.execute(
                 `INSERT INTO ACCOUNTS (completeName, email, password) VALUES (:completeName, :email, :password)`,
-                { completeName, email, password: hashedPassword }, // Use a senha hasheada
+                { completeName, email, password: hashedPassword }, // Dados armazenados no BD
                 { autoCommit: true }
             );
-
-            console.log("Usuário registrado com sucesso!", result.rowsAffected);
+    
+            console.log("Usuário registrado com sucesso!");
             res.status(201).send('Usuário registrado com sucesso!');
         } catch (error) {
             console.error("Erro ao registrar usuário:", error);
@@ -86,7 +86,6 @@ export namespace AccountsHandler {
             }
         }
     };
-
     
     export const loginHandler = async (req: Request, res: Response): Promise<void> => {
       const { email, password } = req.body;
@@ -133,10 +132,10 @@ export namespace AccountsHandler {
                   { expiresIn: '1h' }
               );
   
-              console.log("Login bem-sucedido!", token);
+              console.log("Login bem-sucedido!", user);
   
               // Verificar se é o admin e redirecionar
-              if (user.email === 'aDmin@gmail.com') {
+              if (user.email === 'Admin@gmail.com') {
                   // Aqui você pode enviar uma resposta que indique que é um admin
                   res.status(200).json({ message: 'Login realizado com sucesso! Você é um Admin.', token });
                   // Redirecionamento específico do lado do cliente deve ser feito no frontend
@@ -160,6 +159,11 @@ export namespace AccountsHandler {
           }
       }
   };
+
+
+
+
+}
 
   export const getProfile = async (req: Request, res: Response): Promise<void> => {
     const token = req.headers['authorization']?.split(' ')[1]; // Supondo que o token esteja no formato Bearer
