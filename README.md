@@ -1,1 +1,1 @@
-# PI Segundo semetreste finalizado, a pasta views dentro do backend seria o frontend com a integração, para analise somente do backend, ignorar pasta views --Guilherme Braz, Lucas Anelli, Nicolas Duran, Rafael Roveri, Victor De Palma 
+# Pi_2-
