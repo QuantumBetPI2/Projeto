@@ -9,7 +9,7 @@
 <body>
     <header class="allevents-header">
         <h1>Eventos Disponíveis</h1>
-        <button class="home-button" onclick="redirectToHome()">Voltar para Home</button
+        <button class="home-button" onclick="redirectToHome()">Voltar para Home</button>
     </header>
     <main class="allevents-container">
         <!-- Os cards serão preenchidos dinamicamente pela API -->
@@ -49,8 +49,8 @@
             return;
         }
 
-        // Verifica se o user_id não é igual a 163 para exibir o botão Admin
-        const isAdmin = userProfile && userProfile.completeName === "Admin_PI";
+        // Verifica se o user_id não é igual a 82 para exibir o botão Admin
+        const isAdmin = userProfile && userProfile.completeName === "Admin";
         console.log(isAdmin);
 
         approvedEvents.forEach(event => {

@@ -15,7 +15,7 @@ dotenv.config();
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "lucas2006",
+        password: "NICOLAS",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
@@ -182,8 +182,8 @@ export namespace EventsHandler {
                 return; // Aqui também é necessário retornar para evitar continuar o processamento
             }
     
-            // Verificar se o moderador tem permissão (ID fixo 163)
-            if (id !== 163) {
+            // Verificar se o moderador tem permissão (ID fixo 82)
+            if (id !== 82) {
                 console.error('Moderador não tem permissão para deletar este evento');
                 res.status(403).json({ message: 'Você não tem permissão para deletar este evento.' });
                 return;
@@ -399,7 +399,7 @@ export const finishEvent = async (req: Request, res: Response): Promise<void> =>
         return;
     }
 
-    if (admin_id !== 163) {
+    if (admin_id !== 82) {
         console.error("Apenas o admin pode finalizar o evento.");
         res.status(403).json({ message: "Acesso negado. Apenas o admin pode finalizar eventos." });
         return;
