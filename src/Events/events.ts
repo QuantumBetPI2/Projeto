@@ -5,6 +5,7 @@ import { Connection } from 'oracledb';
 import { stringify } from 'flatted';
 import nodemailer from "nodemailer";
 import jwt from 'jsonwebtoken';
+import oracledb, { Result } from 'oracledb';
 
 
 
@@ -15,7 +16,7 @@ dotenv.config();
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
@@ -26,6 +27,25 @@ export namespace EventsHandler {
   
     // Handler para adicionar um novo evento
     export const addNewEvent = async (req: Request, res: Response): Promise<void> => {
+        const token = req.headers['authorization']?.split(' ')[1]; // Token no formato Bearer
+    
+        if (!token) {
+            res.status(401).send('Token não fornecido.');
+            return;
+        }
+    
+        let creatorId: number;
+    
+        try {
+            // Decodifica o token JWT para obter o ID do usuário
+            const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+            creatorId = decoded.id;
+        } catch (error) {
+            console.error("Erro ao verificar o token:", error);
+            res.status(401).send('Token inválido.');
+            return;
+        }
+    
         const { title, description, event_date } = req.body;
     
         // Validação dos parâmetros
@@ -40,23 +60,25 @@ export namespace EventsHandler {
             connection = await connectToDatabase();
     
             const result = await connection.execute(
-                `INSERT INTO events (title, description, event_date, status) VALUES (:title, :description, :event_date, 'pending')`,
+                `INSERT INTO events (title, description, event_date, status, creator_id, created_at, updated_at) 
+                 VALUES (:title, :description, :event_date, 'pending', :creatorId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
                 {
                     title,
                     description: description || null, // Permitir que a descrição seja nula
-                    event_date: new Date(event_date) // Garantir que a data seja um objeto Date
+                    event_date: new Date(event_date), // Garantir que a data seja um objeto Date
+                    creatorId // O ID do criador extraído do token
                 },
                 { autoCommit: true }
             );
     
             console.log("Evento adicionado com sucesso!", result.rowsAffected);
-            res.status(201).send('Evento adicionado com sucesso!');
+            res.send('Evento adicionado com sucesso!');
         } catch (error) {
             console.error("Erro ao adicionar evento:", error);
             if (error instanceof Error) {
-                res.status(500).send(error.message);
+                res.send(error.message);
             } else {
-                res.status(500).send("Erro desconhecido.");
+                res.send("Erro desconhecido.");
             }
         } finally {
             if (connection) {
@@ -69,7 +91,51 @@ export namespace EventsHandler {
         }
     };
     
+    interface EventResult {
+        creator_id: number;
+    }
+    
+    interface UserResult {
+        email: string;
+    }
+    
+    // Função para enviar o e-mail
+    interface EventResult {
+        creator_id: number;
+    }
+    
+    interface UserResult {
+        email: string;
+    }
    
+    // Função para enviar o e-mail
+    const sendRejectionEmail = async (toEmail: string, reason: string): Promise<void> => {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'quantumbet75@gmail.com', // E-mail de administrador
+                pass: 'Amora123+', // Senha de aplicativo (se 2FA ativado)
+            },
+            tls: {
+                rejectUnauthorized: false, // Para ignorar o erro de certificado SSL (geralmente não é recomendado, mas pode ser necessário em ambientes específicos)
+            },
+        });
+    
+        const mailOptions = {
+            from: "quantumbet75@gmail.com",
+            to: toEmail,
+            subject: 'Evento Rejeitado',
+            text: `Seu evento foi rejeitado. Motivo: ${reason}`,
+        };
+    
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('E-mail de rejeição enviado para', toEmail);
+        } catch (error) {
+            console.error('Erro ao enviar o e-mail:', error);
+        }
+    };
+    
     export const moderateEvent = async (req: Request, res: Response): Promise<void> => {
         const token = req.headers['authorization']?.split(' ')[1]; // Supondo o formato Bearer {token}
     
@@ -107,7 +173,7 @@ export namespace EventsHandler {
                 }
     
                 // Atualiza o status do evento
-                const updateStatusResult = await connection.execute(
+                const updateStatusResult: Result<any> = await connection.execute(
                     `UPDATE events SET status = :status, updated_at = CURRENT_TIMESTAMP WHERE id = :eventId`,
                     { status, eventId },
                     { autoCommit: true }
@@ -125,6 +191,44 @@ export namespace EventsHandler {
                         { reason, eventId },
                         { autoCommit: true }
                     );
+    
+                    // Consultando o creator_id do evento
+                    const eventResult: Result<EventResult> = await connection.execute(
+                        `SELECT creator_id FROM events WHERE id = :eventId`,
+                        { eventId }
+                    );
+    
+                    const eventRows = eventResult.rows as unknown;
+
+                        if (Array.isArray(eventRows) && eventRows.length > 0) {
+                            // Garantindo que eventRows seja um array de arrays com números
+                            const creatorId = (eventRows[0] as EventResult).creator_id; // Acessa o creator_id do evento
+                        } else {
+                            res.status(404).json({ message: "Evento não encontrado." });
+                            return;
+                        }
+    
+                    const creatorId = eventRows[0][0]; // Obtém o creator_id do evento
+    
+                    // Agora buscamos o email do criador usando o creator_id
+                    const userResult: Result<UserResult> = await connection.execute(
+                        `SELECT email FROM accounts WHERE id = :creatorId`,
+                        { creatorId }
+                    );
+    
+                    const userRows = userResult.rows as unknown;
+
+                    if (Array.isArray(userRows) && userRows.length > 0) {
+                        const userEmail = (userRows[0] as UserResult).email; // Acessa o email do criador
+                    } else {
+                        res.status(404).json({ message: "Criador do evento não encontrado." });
+                        return;
+                    }
+                        
+                    const userEmail = userRows[0][0]; // Acessa o email do criador
+    
+                    // Envia o e-mail para o criador
+                    await sendRejectionEmail(userEmail, reason);
                 }
     
                 res.status(200).json({ message: "Evento moderado com sucesso!" });
@@ -182,8 +286,8 @@ export namespace EventsHandler {
                 return; // Aqui também é necessário retornar para evitar continuar o processamento
             }
     
-            // Verificar se o moderador tem permissão (ID fixo 82)
-            if (id !== 82) {
+            // Verificar se o moderador tem permissão (ID fixo 163)
+            if (id !== 163) {
                 console.error('Moderador não tem permissão para deletar este evento');
                 res.status(403).json({ message: 'Você não tem permissão para deletar este evento.' });
                 return;
@@ -399,7 +503,7 @@ export const finishEvent = async (req: Request, res: Response): Promise<void> =>
         return;
     }
 
-    if (admin_id !== 82) {
+    if (admin_id !== 163) {
         console.error("Apenas o admin pode finalizar o evento.");
         res.status(403).json({ message: "Acesso negado. Apenas o admin pode finalizar eventos." });
         return;

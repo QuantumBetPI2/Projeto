@@ -12,7 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #3b82f6, #9333ea);
+    background: linear-gradient(135deg, #4b5563, #1f2937);
     color: #ffffff;
 }
 
@@ -32,6 +32,7 @@ body {
 .form-title {
     font-size: 2rem;
     margin-bottom: 20px;
+    color: #10b981; /* Verde do segundo CSS */
     animation: slideDown 1s ease-in-out forwards;
 }
 
@@ -58,7 +59,7 @@ form input {
 
 /* Efeito Hover no Input */
 form input:focus {
-    border-color: #9333ea;
+    border-color: #10b981; /* Verde do segundo CSS */
     background-color: rgba(255, 255, 255, 1);
     outline: none;
     transform: scale(1.02);
@@ -67,7 +68,7 @@ form input:focus {
 
 /* Estilo do Botão */
 button[type="submit"] {
-    background-color: #1d4ed8;
+    background-color: #10b981; /* Verde do segundo CSS */
     color: #ffffff;
     padding: 12px 20px;
     border: none;
@@ -80,13 +81,13 @@ button[type="submit"] {
 
 /* Efeitos ao Passar o Mouse no Botão */
 button[type="submit"]:hover {
-    background-color: #2563eb;
+    background-color: #059669; /* Tom mais escuro de verde */
     transform: scale(1.05);
 }
 
 button[type="submit"]:active {
     transform: scale(1);
-    background-color: #1e40af;
+    background-color: #047857; /* Tom ainda mais escuro */
 }
 
 /* Animações de Entrada */

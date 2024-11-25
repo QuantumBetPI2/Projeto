@@ -14,7 +14,7 @@ document.getElementById('finishEventForm').addEventListener('submit', function (
     })
     .then(response => response.json())
     .then(data => {
-        if (data.completeName === "Admin") {
+        if (data.completeName === "Admin_PI") {
             // Se o usuário for admin, finaliza o evento
             fetch('http://localhost:3000/finishEvent', {
                 method: 'POST',
