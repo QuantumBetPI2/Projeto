@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });

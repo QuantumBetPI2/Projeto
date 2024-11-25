@@ -18,7 +18,7 @@ interface User {
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
@@ -136,7 +136,7 @@ export namespace AccountsHandler {
               console.log("Login bem-sucedido!", token);
   
               // Verificar se é o admin e redirecionar
-              if (user.email === 'admin1@gmail.com') {
+              if (user.email === 'aDmin@gmail.com') {
                   // Aqui você pode enviar uma resposta que indique que é um admin
                   res.status(200).json({ message: 'Login realizado com sucesso! Você é um Admin.', token });
                   // Redirecionamento específico do lado do cliente deve ser feito no frontend

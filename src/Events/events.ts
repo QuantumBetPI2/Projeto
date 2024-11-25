@@ -15,7 +15,7 @@ dotenv.config();
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "NICOLAS",
+        password: "lucas2006",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
@@ -23,49 +23,61 @@ async function connectToDatabase() {
 
 // Namespace para gerenciar eventos
 export namespace EventsHandler {
-  
+    const secretKey = 'pi_auth'
     // Handler para adicionar um novo evento
     export const addNewEvent = async (req: Request, res: Response): Promise<void> => {
-        const { title, description, event_date,  } = req.body;
-    
-        // Validação dos parâmetros
-        if (!title || !event_date) {
-            res.status(400).send('Requisição inválida - Título e data do evento são obrigatórios.');
+        const { title, description, event_date } = req.body;
+        const token = req.headers['authorization']?.split(' ')[1]; // Pega o token do cabeçalho Authorization
+        
+        if (!token) {
+            res.status(401).send('Token não fornecido.');
             return;
         }
     
-        let connection;
-    
         try {
-            connection = await connectToDatabase();
+            // Decodificando o token para pegar o ID do usuário
+            const decoded: any = jwt.verify(token, secretKey);
+            const userId = decoded.id; // Supondo que o ID do usuário esteja armazenado no token
     
-            const result = await connection.execute(
-                `INSERT INTO events (title, description, event_date, status) VALUES (:title, :description, :event_date, 'pending')`,
-                {
-                    title,
-                    description: description || null, // Permitir que a descrição seja nula
-                    event_date: new Date(event_date) // Garantir que a data seja um objeto Date
-                },
-                { autoCommit: true }
-            );
-    
-            console.log("Evento adicionado com sucesso!", result.rowsAffected);
-            res.status(201).send('Evento adicionado com sucesso!');
-        } catch (error) {
-            console.error("Erro ao adicionar evento:", error);
-            if (error instanceof Error) {
-                res.status(500).send(error.message);
-            } else {
-                res.status(500).send("Erro desconhecido.");
+            // Validação dos parâmetros
+            if (!title || !event_date) {
+                res.status(400).send('Requisição inválida - Título e data do evento são obrigatórios.');
+                return;
             }
-        } finally {
-            if (connection) {
-                try {
-                    await connection.close();
-                } catch (err) {
-                    console.error("Erro ao fechar a conexão:", err);
+    
+            let connection;
+            try {
+                connection = await connectToDatabase();
+    
+                // Inserir o evento com o userId do criador
+                const result = await connection.execute(
+                    `INSERT INTO events (title, description, event_date, status, creator_id) 
+                    VALUES (:title, :description, :event_date, 'pending', :creator_id)`,
+                    {
+                        title,
+                        description: description || null, // Permitir que a descrição seja nula
+                        event_date: new Date(event_date),
+                        user_id: userId, // Associando o ID do usuário ao evento
+                    },
+                    { autoCommit: true }
+                );
+    
+                console.log("Evento adicionado com sucesso!", result.rowsAffected);
+                res.status(201).send('Evento adicionado com sucesso!');
+            } catch (error) {
+                console.error("Erro ao adicionar evento:", error);
+                res.status(500).send("Erro ao adicionar evento.");
+            } finally {
+                if (connection) {
+                    try {
+                        await connection.close();
+                    } catch (err) {
+                        console.error("Erro ao fechar a conexão:", err);
+                    }
                 }
             }
+        } catch (error) {
+            res.status(401).send('Token inválido.');
         }
     };
     
@@ -83,7 +95,7 @@ export namespace EventsHandler {
             const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
             const userId = decoded.id;
     
-            const { eventId, action, reason, userEmail } = req.body;
+            const { eventId, action, reason } = req.body;
     
             if (!eventId || !action) {
                 res.status(400).send("Requisição inválida - Parâmetros faltando.");
@@ -118,37 +130,13 @@ export namespace EventsHandler {
                     return;
                 }
     
-                // Se rejeitado, atualiza a descrição e envia email com o motivo
+                // Se rejeitado, atualiza a descrição e registra o motivo
                 if (status === "rejected" && reason) {
                     await connection.execute(
                         `UPDATE events SET description = :reason WHERE id = :eventId`,
                         { reason, eventId },
                         { autoCommit: true }
                     );
-    
-                    // Configuração do transporte do Nodemailer
-                    const transporter = nodemailer.createTransport({
-                        service: 'gmail', // Ajuste de acordo com o seu provedor de email
-                        auth: {
-                            user: "quantumbet75@gmail.com", // Email do remetente
-                            pass: "Amora123+", // Senha ou token de app
-                        },
-                    });
-    
-                    // Corpo do email
-                    const mailOptions = {
-                        from: process.env.EMAIL_USER,
-                        to: "nicolasduran90@oultook.com",
-                        subject: "Evento Rejeitado",
-                        text: `Seu evento foi rejeitado pelo seguinte motivo: ${reason}`,
-                    };
-    
-                    try {
-                        await transporter.sendMail(mailOptions);
-                        console.log("Email enviado com sucesso!");
-                    } catch (error) {
-                        console.error("Erro ao enviar email:", error);
-                    }
                 }
     
                 res.status(200).json({ message: "Evento moderado com sucesso!" });
@@ -206,8 +194,8 @@ export namespace EventsHandler {
                 return; // Aqui também é necessário retornar para evitar continuar o processamento
             }
     
-            // Verificar se o moderador tem permissão (ID fixo 82)
-            if (id !== 82) {
+            // Verificar se o moderador tem permissão (ID fixo 163)
+            if (id !== 163) {
                 console.error('Moderador não tem permissão para deletar este evento');
                 res.status(403).json({ message: 'Você não tem permissão para deletar este evento.' });
                 return;
@@ -423,7 +411,7 @@ export const finishEvent = async (req: Request, res: Response): Promise<void> =>
         return;
     }
 
-    if (admin_id !== 82) {
+    if (admin_id !== 163) {
         console.error("Apenas o admin pode finalizar o evento.");
         res.status(403).json({ message: "Acesso negado. Apenas o admin pode finalizar eventos." });
         return;
