@@ -12,60 +12,42 @@ async function connectToDatabase() {
 }
 
 export namespace FinancialManager {
+   export namespace FinancialManager {
     export const addFunds = async (req: Request, res: Response): Promise<void> => {
-        const { amount } = req.body; // Apenas `amount` agora é recebido
-        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
-    
-        console.log("Token recebido no cabeçalho:", req.headers.authorization);
-        console.log("Token extraído:", token);
-    
-        if (!token) {
-            res.status(401).json({ message: "Token não fornecido." });
+        const { user_id, amount } = req.body;
+
+        // Validação dos parâmetros
+        if (!user_id|| !amount) {
+            res.status(400).json({ message: 'userId e amount são obrigatórios.' });
             return;
         }
-    
+
+        let connection;
+
         try {
-            const secretKey = "pi_auth";
-            console.log("Chave secreta usada para validação:", secretKey);
-    
-            const decoded = jwt.verify(token, secretKey) as { id: number };
-            console.log("Decodificação bem-sucedida do token:", decoded);
-    
-            const user_id = decoded.id;
-    
-            if (!amount || amount <= 0) {
-                res.status(400).json({ message: "Valor inválido para adicionar fundos." });
-                return;
-            }
-    
-            let connection;
-    
-            try {
-                connection = await connectToDatabase();
-    
-                const result = await connection.execute(
-                    `INSERT INTO FUNDS (user_id, amount) VALUES (:user_id, :amount)`,
-                    { user_id, amount },
-                    { autoCommit: true }
-                );
-    
-                console.log("Fundos adicionados com sucesso! Linhas afetadas:", result.rowsAffected);
-                res.status(201).json({ message: "Fundos adicionados com sucesso!" });
-            } catch (error) {
-                console.error("Erro ao adicionar fundos:", error);
-                res.status(500).json({ message: "Erro ao adicionar fundos." });
-            } finally {
-                if (connection) {
-                    try {
-                        await connection.close();
-                    } catch (closeError) {
-                        console.error("Erro ao fechar a conexão:", closeError);
-                    }
+            connection = await connectToDatabase();
+
+            // Insere os fundos na tabela FUNDS
+            const result = await connection.execute(
+                `INSERT INTO FUNDS (user_id, amount) VALUES (:user_id, :amount)`,
+                { user_id, amount },
+                { autoCommit: true }
+            );
+
+            console.log("Fundos adicionados com sucesso!", result.rowsAffected);
+            res.status(201).json({ message: 'Fundos adicionados com sucesso!' });
+        } catch (error) {
+            console.error("Erro ao adicionar fundos:", error);
+            res.status(500).json({ message: 'Erro ao adicionar fundos.' });
+        } finally {
+            // Certifique-se de fechar a conexão se estiver aberta
+            if (connection) {
+                try {
+                    await connection.close();
+                } catch (closeError) {
+                    console.error('Erro ao fechar a conexão:', closeError);
                 }
             }
-        } catch (err) {
-            console.error("Erro ao verificar o token:", err);
-            res.status(403).json({ message: "Token inválido ou expirado." });
         }
     };
 
