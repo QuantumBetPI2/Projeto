@@ -70,77 +70,55 @@ export namespace EventsHandler {
     };
     
    
-    export const moderateEvent = async (req: Request, res: Response): Promise<void> => {
-        const token = req.headers['authorization']?.split(' ')[1]; // Supondo o formato Bearer {token}
-    
-        if (!token) {
-            res.status(401).send("Token não fornecido.");
+     export const moderateEvent = async (req: Request, res: Response): Promise<void> => {
+        const { eventId, action, reason } = req.body;
+
+        if (!eventId || !action) {
+            res.status(400).send('Requisição inválida - Parâmetros faltando.');
             return;
         }
-    
+
+        let connection;
+
         try {
-            // Decodifica o token para obter o ID do usuário
-            const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-            const userId = decoded.id;
-    
-            const { eventId, action, reason } = req.body;
-    
-            if (!eventId || !action) {
-                res.status(400).send("Requisição inválida - Parâmetros faltando.");
-                return;
-            }
-    
-            let connection;
-    
-            try {
-                connection = await connectToDatabase();
-    
-                // Determina o status com base na ação recebida
-                let status: string;
-                if (action === "approved") {
-                    status = "approved";
-                } else if (action === "rejected") {
-                    status = "rejected";
-                } else {
-                    res.status(400).send("Ação inválida.");
-                    return;
-                }
-    
-                // Atualiza o status do evento
-                const updateStatusResult = await connection.execute(
-                    `UPDATE events SET status = :status, updated_at = CURRENT_TIMESTAMP WHERE id = :eventId`,
-                    { status, eventId },
+            connection = await connectToDatabase();
+
+            const result = await connection.execute(
+                `UPDATE events SET status = :status, updated_at = CURRENT_TIMESTAMP WHERE id = :eventId`,
+                {
+                    status: action === 'aprovar' ? 'approved' : 'rejected',
+                    eventId,
+                },
+                { autoCommit: true }
+            );
+
+            if (action === 'reprovar' && reason) {
+                await connection.execute(
+                    `UPDATE events SET description = :reason WHERE id = :eventId`,
+                    {
+                        reason,
+                        eventId,
+                    },
                     { autoCommit: true }
                 );
-    
-                if (updateStatusResult.rowsAffected === 0) {
-                    res.status(404).json({ message: "Evento não encontrado." });
-                    return;
-                }
-    
-                // Se rejeitado, atualiza a descrição e registra o motivo
-                if (status === "rejected" && reason) {
-                    await connection.execute(
-                        `UPDATE events SET description = :reason WHERE id = :eventId`,
-                        { reason, eventId },
-                        { autoCommit: true }
-                    );
-                }
-    
-                res.status(200).json({ message: "Evento moderado com sucesso!" });
-            } catch (error) {
-                res.status(500).json({ message: error instanceof Error ? error.message : "Erro desconhecido." });
-            } finally {
-                if (connection) {
-                    try {
-                        await connection.close();
-                    } catch (err) {
-                        console.error("Erro ao fechar a conexão:", err);
-                    }
-                }
+            }
+
+            if (result.rowsAffected && result.rowsAffected > 0) {
+                res.status(200).send('Evento moderado com sucesso!');
+            } else {
+                res.status(404).send('Evento não encontrado.');
             }
         } catch (error) {
-            res.status(403).send("Token inválido ou expirado.");
+            console.error("Erro ao moderar evento:", error);
+            res.status(500).send(error instanceof Error ? error.message : "Erro desconhecido.");
+        } finally {
+            if (connection) {
+                try {
+                    await connection.close();
+                } catch (err) {
+                    console.error("Erro ao fechar a conexão:", err);
+                }
+            }
         }
     };
     
