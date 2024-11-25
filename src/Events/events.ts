@@ -16,7 +16,7 @@ dotenv.config();
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "lucas2006",
+        password: "NICOLAS",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
@@ -113,16 +113,16 @@ export namespace EventsHandler {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'lucasbissi2006@gmail.com', // E-mail de administrador
-                pass: 'irfd bebq qvxq ytls', // Senha de aplicativo (se 2FA ativado)
+                user: 'quantumbet75@gmail.com', 
+                pass: 'pmkv fexd rydv jmxg', 
             },
             tls: {
-                rejectUnauthorized: false, // Para ignorar o erro de certificado SSL (geralmente não é recomendado, mas pode ser necessário em ambientes específicos)
+                rejectUnauthorized: false, 
             },
         });
     
         const mailOptions = {
-            from: "lucasbissi2006@gmail.com",
+            from: "quantumbet75@gmail.com",
             to: toEmail,
             subject: 'Evento Rejeitado',
             text: `Seu evento foi rejeitado. Motivo: ${reason}`,

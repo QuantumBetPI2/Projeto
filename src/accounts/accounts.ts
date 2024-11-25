@@ -18,7 +18,7 @@ interface User {
 async function connectToDatabase() {
     return OracleDB.getConnection({
         user: "sys",
-        password: "lucas2006",
+        password: "NICOLAS",
         connectString: "localhost:1521/XEPDB1",
         privilege: OracleDB.SYSDBA
     });
