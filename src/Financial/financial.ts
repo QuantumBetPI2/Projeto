@@ -13,8 +13,8 @@ async function connectToDatabase() {
 
 export namespace FinancialManager {
     export const addFunds = async (req: Request, res: Response): Promise<void> => {
-        const { amount } = req.body; // Apenas `amount` agora é recebido
-        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
+        const { amount } = req.body; 
+        const token = req.headers.authorization?.split(" ")[1]?.trim(); 
     
         console.log("Token recebido no cabeçalho:", req.headers.authorization);
         console.log("Token extraído:", token);
