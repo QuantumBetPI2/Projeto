@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprovar Evento</title>
+    <link rel="stylesheet" href="aprovestyles.css"> <!-- Link para o CSS -->
+</head>
+<body>
+
+    <header>
+        <h1>Moderar Eventos</h1>
+    </header>
+
+    <main class="allevents-container">
+        <!-- Os eventos pendentes aparecerão aqui -->
+    </main>
+
+    <script>
+        // Função para buscar eventos da API
+        async function fetchPendingEvents() {
+            try {
+                const url = `http://localhost:3000/getEvents`; // Ajuste a URL conforme necessário
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("Erro ao buscar eventos");
+                }
+
+                const allEvents = await response.json();
+
+                // Filtrar eventos com status 'pending'
+                const pendingEvents = allEvents.filter(event => event.status === 'pending');
+
+                const container = document.querySelector('.allevents-container');
+                container.innerHTML = '';
+
+                if (pendingEvents.length === 0) {
+                    container.innerHTML = '<p>Nenhum evento pendente encontrado para moderação.</p>';
+                    return;
+                }
+
+                pendingEvents.forEach(event => {
+                    const card = document.createElement('div');
+                    card.classList.add('event-card');
+
+                    card.innerHTML = `
+                        <h3>${event.title}</h3>
+                        <p>${event.description}</p>
+                        <p>Data: ${new Date(event.event_date).toLocaleDateString()}</p>
+                        <p>ID do evento: ${event.id}</p>
+                    `;
+
+                    // Adiciona botões de ações (aprovar/reprovar)
+                    const actions = document.createElement('div');
+                    actions.classList.add('actions'); // Classe para o contêiner de ações
+
+                    const approveButton = document.createElement('button');
+                    approveButton.innerText = 'Aprovar';
+                    approveButton.onclick = () => approveEvent(event, approveButton, rejectButton);
+                    approveButton.classList.add('action-btn', 'approve'); // Classe para o botão de aprovação
+
+                    const rejectButton = document.createElement('button');
+                    rejectButton.innerText = 'Reprovar';
+                    rejectButton.onclick = () => rejectEvent(event, approveButton, rejectButton);
+                    rejectButton.classList.add('action-btn', 'reject'); // Classe para o botão de reprovação
+
+                    actions.appendChild(approveButton);
+                    actions.appendChild(rejectButton);
+                    card.appendChild(actions);
+
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Erro:", error);
+                const container = document.querySelector('.allevents-container');
+                container.innerHTML = '<p>Ocorreu um erro ao carregar os eventos. Tente novamente mais tarde.</p>';
+            }
+        }
+
+        // Função para aprovar evento
+      // Função para aprovar evento
+async function approveEvent(event, approveButton, rejectButton) {
+    try {
+        const response = await fetch('http://localhost:3000/evaluateEvent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                eventId: event.id,
+                action: 'approved', // Ação correta para aprovação
+            }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            approveButton.innerText = 'Aprovado'; // Alterar texto do botão
+            approveButton.disabled = true; // Desabilitar botão de aprovação
+            rejectButton.disabled = true; // Desabilitar botão de reprovação
+            fetchPendingEvents(); // Recarrega os eventos pendentes
+        } else {
+            alert(result.message);
+        }
+    } catch (error) {
+        console.error('Erro ao aprovar evento:', error);
+        alert('Ocorreu um erro ao aprovar o evento.');
+    }
+}
+
+// Função para reprovar evento
+async function rejectEvent(event, approveButton, rejectButton) {
+    const reason = prompt('Informe o motivo da reprovação:'); // Solicita o motivo de reprovação
+
+    if (!reason) {
+        alert('Motivo de reprovação é obrigatório.');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/evaluateEvent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                eventId: event.id,
+                action: 'rejected', // Ação correta para reprovação
+                reason: reason, // Enviar o motivo
+            }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            rejectButton.innerText = 'Reprovado'; // Alterar texto do botão
+            rejectButton.disabled = true; // Desabilitar botão de reprovação
+            approveButton.disabled = true; // Desabilitar botão de aprovação
+            fetchPendingEvents(); // Recarrega os eventos pendentes
+        } else {
+            alert(result.message);
+        }
+    } catch (error) {
+        console.error('Erro ao reprovar evento:', error);
+        alert('Ocorreu um erro ao reprovar o evento.');
+    }
+}
+
+        // Carregar eventos pendentes ao abrir a página
+        fetchPendingEvents();
+    </script>
+</body>
+</html>

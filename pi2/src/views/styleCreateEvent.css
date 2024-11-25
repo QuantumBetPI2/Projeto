@@ -1,0 +1,116 @@
+/* Reset de Estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos do Corpo */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #4b5563, #1f2937);
+    color: #ffffff;
+}
+
+/* Estilo da Caixa de Criação de Evento */
+.event-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: slideIn 0.8s ease-in-out;
+}
+
+/* Estilo do Título */
+.event-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #10b981; /* Cor do título */
+}
+
+/* Estilos dos Campos de Entrada */
+form label {
+    display: block;
+    margin-top: 10px;
+    text-align: left;
+    font-size: 1rem;
+    color: #10b981; /* Cor dos rótulos */
+}
+
+form input,
+form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+    color: #ffffff;
+    transition: all 0.3s;
+}
+
+/* Efeito de Foco nos Inputs */
+form input:focus,
+form textarea:focus {
+    border-color: #10b981; /* Cor do foco */
+    background-color: rgba(255, 255, 255, 0.3);
+    outline: none;
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo do Botão */
+button[type="submit"] {
+    background-color: #10b981; /* Cor do botão */
+    color: #ffffff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+}
+
+/* Efeitos de Hover e Ativo no Botão */
+button[type="submit"]:hover {
+    background-color: #059669; /* Cor ao passar o mouse */
+    transform: scale(1.05);
+}
+
+button[type="submit"]:active {
+    transform: scale(1);
+    background-color: #047857; /* Cor ao clicar */
+}
+
+/* Animações e Efeitos */
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Estilo para Erros nos Inputs */
+input.error,
+textarea.error {
+    border-color: #f44336; /* Vermelho para erro */
+}
+
+input.error:focus,
+textarea.error:focus {
+    background-color: rgba(255, 0, 0, 0.1); /* Fundo levemente vermelho */
+}

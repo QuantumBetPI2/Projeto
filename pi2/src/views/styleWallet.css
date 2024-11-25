@@ -1,0 +1,149 @@
+/* Reset de Estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos do Corpo */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #0d1b2a, #1b263b);
+    color: #ffffff;
+}
+
+/* Cabeçalho */
+header {
+    text-align: center;
+    padding: 20px;
+    background: #1b263b;
+    width: 100%;
+    color: #10b981; /* Cor do cabeçalho ajustada */
+}
+
+header h1 {
+    font-size: 2.5rem;
+}
+
+/* Seção de Saldo */
+.balance-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.balance-section h2 {
+    font-size: 1.8rem;
+    color: #10b981; /* Cor do título do saldo ajustada */
+}
+
+.balance-section p {
+    font-size: 2rem;
+    margin: 10px 0;
+}
+
+.balance-section button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #10b981; /* Cor do botão ajustada */
+    color: #ffffff; /* Texto do botão em branco */
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.balance-section button:hover {
+    background: #059669; /* Cor do botão ao passar o mouse */
+}
+
+/* Histórico */
+.history-section {
+    width: 80%;
+    margin-top: 20px;
+}
+
+.history-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #10b981; /* Cor do título do histórico ajustada */
+}
+
+.history-list {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.history-list h3 {
+    color: #10b981; /* Cor dos títulos do histórico ajustada */
+}
+
+.history-list ul {
+    list-style: none;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #1b263b;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-content h2 {
+    font-size: 1.6rem;
+    color: #10b981; /* Cor do título do modal ajustada */
+    margin-bottom: 20px;
+}
+
+.modal-content label, .modal-content input {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    color: #ffffff; /* Cor do texto dos labels ajustada */
+}
+
+.modal-content input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2); /* Fundo dos inputs no modal */
+}
+
+.modal-content button {
+    margin: 10px 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-content button:first-child {
+    background: #10b981; /* Cor do botão de ação no modal ajustada */
+    color: #ffffff;
+}
+
+.modal-content button:last-child {
+    background: #f44336; /* Cor do botão de cancelamento no modal */
+    color: white;
+}
