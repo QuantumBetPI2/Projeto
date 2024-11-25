@@ -35,6 +35,35 @@ header:hover {
     transform: translateY(-5px);
 }
 
+
+.home-button {
+    background-color: #10b981; /* Verde personalizado */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #059669; /* Tom mais escuro de verde ao passar o mouse */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.home-button:active {
+    background-color: #047857; /* Tom ainda mais escuro ao clicar */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+}
+
+
 /* Seção de Destaques */
 .highlights {
     margin: 50px auto;

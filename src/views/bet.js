@@ -25,11 +25,7 @@ async function loadEventDetails() {
 
         // Exibe os detalhes do evento
         const eventDetails = document.getElementById('event-details');
-        eventDetails.innerHTML = `
-            <h2>${event.title}</h2>
-            <p>${event.description}</p>
-            <p>Data: ${new Date(event.event_date).toLocaleDateString()}</p>
-        `;
+        
     } catch (error) {
         console.error("Erro ao buscar detalhes do evento:", error);
         document.getElementById('event-details').innerHTML = '<p>Erro ao carregar os detalhes do evento.</p>';
@@ -137,6 +133,10 @@ async function confirmBet() {
         if (response.ok) {
             messageDiv.textContent = "Aposta realizada com sucesso!";
             messageDiv.style.color = "green";
+
+            setTimeout(() => {
+                window.location.href = 'home.html'; // Substitua '/home' pelo caminho da página inicial do seu site
+            }, 2000);
         } else {
             throw new Error(result.message || "Erro ao realizar a aposta.");
         }

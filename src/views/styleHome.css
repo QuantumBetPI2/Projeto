@@ -194,6 +194,22 @@ header .search-container button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Leve sombra ao passar o mouse */
 }
 
+.close-btn {
+    background-color: #f44336; /* Cor vermelha para destacar */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.close-btn:hover {
+    background-color: #d32f2f; /* Cor mais escura ao passar o mouse */
+}
+
 #userOptionsContainer {
     position: absolute;
     top: 90px; /* Ajusta a posição para ficar abaixo da imagem de perfil */

@@ -4,25 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const title = document.getElementById('title').value;
         const description = document.getElementById('description').value;
+        const quotaValue = document.getElementById('quotaValue').value;
+        const betStart = document.getElementById('betStart').value;
+        const betEnd = document.getElementById('betEnd').value;
         const eventDate = document.getElementById('eventDate').value;
 
         const responseMessage = document.getElementById('responseMessage');
         responseMessage.textContent = ''; // Limpa a mensagem anterior
-
-        // Recupera o token de autenticação do localStorage
-        const token = localStorage.getItem('token');
-        if (!token) {
-            responseMessage.style.color = 'red';
-            responseMessage.textContent = 'Usuário não autenticado. Por favor, faça login.';
-            return;
-        }
 
         try {
             const response = await fetch('http://localhost:3000/addNewEvent', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
                 },
                 body: JSON.stringify({
                     title,

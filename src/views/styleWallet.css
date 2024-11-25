@@ -48,6 +48,14 @@ header h1 {
     }
 }
 
+
+.wallet-button.back-to-home {
+    background-color: #2196F3;
+    width: 100%;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
 /* Seção de Saldo */
 .wallet-container {
     margin-top: 30px;

@@ -23,61 +23,49 @@ async function connectToDatabase() {
 
 // Namespace para gerenciar eventos
 export namespace EventsHandler {
-    const secretKey = 'pi_auth'
+  
     // Handler para adicionar um novo evento
     export const addNewEvent = async (req: Request, res: Response): Promise<void> => {
         const { title, description, event_date } = req.body;
-        const token = req.headers['authorization']?.split(' ')[1]; // Pega o token do cabeçalho Authorization
-        
-        if (!token) {
-            res.status(401).send('Token não fornecido.');
+    
+        // Validação dos parâmetros
+        if (!title || !event_date) {
+            res.status(400).send('Requisição inválida - Título e data do evento são obrigatórios.');
             return;
         }
     
+        let connection;
+    
         try {
-            // Decodificando o token para pegar o ID do usuário
-            const decoded: any = jwt.verify(token, secretKey);
-            const userId = decoded.id; // Supondo que o ID do usuário esteja armazenado no token
+            connection = await connectToDatabase();
     
-            // Validação dos parâmetros
-            if (!title || !event_date) {
-                res.status(400).send('Requisição inválida - Título e data do evento são obrigatórios.');
-                return;
+            const result = await connection.execute(
+                `INSERT INTO events (title, description, event_date, status) VALUES (:title, :description, :event_date, 'pending')`,
+                {
+                    title,
+                    description: description || null, // Permitir que a descrição seja nula
+                    event_date: new Date(event_date) // Garantir que a data seja um objeto Date
+                },
+                { autoCommit: true }
+            );
+    
+            console.log("Evento adicionado com sucesso!", result.rowsAffected);
+            res.status(201).send('Evento adicionado com sucesso!');
+        } catch (error) {
+            console.error("Erro ao adicionar evento:", error);
+            if (error instanceof Error) {
+                res.status(500).send(error.message);
+            } else {
+                res.status(500).send("Erro desconhecido.");
             }
-    
-            let connection;
-            try {
-                connection = await connectToDatabase();
-    
-                // Inserir o evento com o userId do criador
-                const result = await connection.execute(
-                    `INSERT INTO events (title, description, event_date, status, creator_id) 
-                    VALUES (:title, :description, :event_date, 'pending', :creator_id)`,
-                    {
-                        title,
-                        description: description || null, // Permitir que a descrição seja nula
-                        event_date: new Date(event_date),
-                        user_id: userId, // Associando o ID do usuário ao evento
-                    },
-                    { autoCommit: true }
-                );
-    
-                console.log("Evento adicionado com sucesso!", result.rowsAffected);
-                res.status(201).send('Evento adicionado com sucesso!');
-            } catch (error) {
-                console.error("Erro ao adicionar evento:", error);
-                res.status(500).send("Erro ao adicionar evento.");
-            } finally {
-                if (connection) {
-                    try {
-                        await connection.close();
-                    } catch (err) {
-                        console.error("Erro ao fechar a conexão:", err);
-                    }
+        } finally {
+            if (connection) {
+                try {
+                    await connection.close();
+                } catch (err) {
+                    console.error("Erro ao fechar a conexão:", err);
                 }
             }
-        } catch (error) {
-            res.status(401).send('Token inválido.');
         }
     };
     

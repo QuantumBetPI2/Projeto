@@ -9,12 +9,16 @@
 <body>
     <header class="allevents-header">
         <h1>Eventos Disponíveis</h1>
+        <button class="home-button" onclick="redirectToHome()">Voltar para Home</button
     </header>
     <main class="allevents-container">
         <!-- Os cards serão preenchidos dinamicamente pela API -->
     </main>
     <script>
         // Função para buscar eventos da API com palavra-chave
+        function redirectToHome() {
+            window.location.href = 'home.html'; // URL da página inicial
+        }
         async function fetchEvents(keyword = '') {
     try {
         const url = `http://localhost:3000/getEvents?keyword=${encodeURIComponent(keyword)}`;

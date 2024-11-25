@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(text => {
         console.log('Resposta da API (texto):', text); // Log da resposta em texto
     
-        // Tenta analisar como JSON
+        
         try {
             const data = JSON.parse(text);
             console.log('Dados recebidos da API:', data); // Log dos dados recebidos
@@ -142,6 +142,7 @@ async function searchEvents() {
                             <p><strong>Criado em:</strong> ${new Date(event.created_at).toLocaleDateString()}</p>
                             <p><strong>Atualizado em:</strong> ${new Date(event.updated_at).toLocaleDateString()}</p>
                             <button onclick="window.location.href='bet.html?eventId=${event.id}'">Apostar</button>
+                            <button class="close-btn" onclick="removeCard(this)">Fechar</button>
                         </div>
                     `;
                     resultsContainer.appendChild(eventElement);
@@ -155,6 +156,17 @@ async function searchEvents() {
         alert('Por favor, insira um termo de busca.');
     }
 }
+
+// Função para remover um card
+function removeCard(button) {
+    const card = button.closest('.event-card'); 
+    card.remove(); // Remove o card do DOM
+}
+
+function logout() {
+    window.location.href = "login.html"; 
+}
+
 
 // Função para exibir detalhes do evento em um overlay
 function showEventDetails(eventId, title, description, eventDate, status) {
