@@ -67,7 +67,7 @@ export namespace AccountsHandler {
 
             const result = await connection.execute(
                 `INSERT INTO ACCOUNTS (completeName, email, password) VALUES (:completeName, :email, :password)`,
-                { completeName, email, password: hashedPassword }, // Use a senha hasheada
+                { completeName, email, password: hashedPassword }, 
                 { autoCommit: true }
             );
 
@@ -106,7 +106,7 @@ export namespace AccountsHandler {
               { email }
           );
   
-          // Verificação se rows existe e não está vazio
+          
           if (result.rows && result.rows.length > 0) {
               const row = result.rows[0] as (number | string)[];
   
@@ -128,7 +128,7 @@ export namespace AccountsHandler {
   
               // Criação do token
               const token = jwt.sign(
-                  { id: user.id, email: user.email }, // Não incluir role
+                  { id: user.id, email: user.email }, 
                   process.env.JWT_SECRET!,
                   { expiresIn: '1h' }
               );
@@ -137,9 +137,9 @@ export namespace AccountsHandler {
   
               // Verificar se é o admin e redirecionar
               if (user.email === 'aDmin@gmail.com') {
-                  // Aqui você pode enviar uma resposta que indique que é um admin
+                  
                   res.status(200).json({ message: 'Login realizado com sucesso! Você é um Admin.', token });
-                  // Redirecionamento específico do lado do cliente deve ser feito no frontend
+                
               } else {
                   res.status(200).json({ message: 'Login realizado com sucesso!', token });
               }
@@ -162,7 +162,7 @@ export namespace AccountsHandler {
   };
 
   export const getProfile = async (req: Request, res: Response): Promise<void> => {
-    const token = req.headers['authorization']?.split(' ')[1]; // Supondo que o token esteja no formato Bearer
+    const token = req.headers['authorization']?.split(' ')[1]; 
 
     if (!token) {
         res.status(401).send('Token não fornecido.');
@@ -187,7 +187,7 @@ export namespace AccountsHandler {
             if (result.rows && result.rows.length > 0) {
                 const row = result.rows[0] as (string | number)[];
                 const userCompleteName = row[0];
-                const userIdFromDb = row[1];  // O id do usuário recuperado do banco
+                const userIdFromDb = row[1];  
 
                 // Retorna o nome completo e o id do usuário
                 res.status(200).json({ completeName: userCompleteName, id: userIdFromDb });
