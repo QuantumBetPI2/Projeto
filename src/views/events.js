@@ -14,6 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('Form data:', { title, description, quotaValue, betStart, betEnd, eventDate });
 
+        // Validação de data
+        const currentDate = new Date(); 
+        const eventDateObj = new Date(eventDate); 
+        
+        if (eventDateObj < currentDate) {
+            responseMessage.style.color = 'red';
+            responseMessage.textContent = 'Erro: A data do evento não pode ser no passado.';
+            console.log('Erro: A data do evento já passou.');
+            return;
+        }
+
         try {
             const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
             console.log('Token:', token);
