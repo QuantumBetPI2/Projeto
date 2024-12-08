@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aprovar Evento</title>
-    <link rel="stylesheet" href="aprovestyles.css"> <!-- Link para o CSS -->
+    <link rel="stylesheet" href="aprovestyles.css"> 
 </head>
 <body>
 
@@ -13,14 +13,14 @@
     </header>
 
     <main class="allevents-container">
-        <!-- Os eventos pendentes aparecerão aqui -->
+      
     </main>
 
     <script>
         // Função para buscar eventos da API
         async function fetchPendingEvents() {
             try {
-                const url = `http://localhost:3000/getEvents`; // Ajuste a URL conforme necessário
+                const url = `http://localhost:3000/getEvents`; 
                 const response = await fetch(url);
 
                 if (!response.ok) {
@@ -51,7 +51,7 @@
                         <p>ID do evento: ${event.id}</p>
                     `;
 
-                    // Adiciona botões de ações (aprovar/reprovar/deletar)
+           
                     const actions = document.createElement('div');
                     actions.classList.add('actions'); // Classe para o contêiner de ações
 
@@ -72,7 +72,7 @@
 
                     actions.appendChild(approveButton);
                     actions.appendChild(rejectButton);
-                    actions.appendChild(deleteButton); // Adiciona o botão de deletar
+                    actions.appendChild(deleteButton); 
                     card.appendChild(actions);
 
                     container.appendChild(card);
@@ -167,7 +167,7 @@
     const confirmation = confirm('Tem certeza que deseja deletar este evento?');
 
     if (!confirmation) {
-        return; // Se o usuário cancelar, não faz nada
+        return; 
     }
 
     console.log("Iniciando a exclusão do evento...");
