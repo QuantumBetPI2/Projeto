@@ -120,10 +120,10 @@ async function confirmBet() {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Envia o token do usuário logado
             },
             body: JSON.stringify({
-                user_id: userId,                // Envia o user_id recuperado do perfil
-                event_id: eventId,              // ID do evento
-                statusBet: selectedBetOption,   // Opção de aposta
-                amount: betAmount               // Valor da aposta
+                user_id: userId,                
+                event_id: eventId,              
+                statusBet: selectedBetOption,   
+                amount: betAmount               
             })
         });
 
@@ -135,7 +135,7 @@ async function confirmBet() {
             messageDiv.style.color = "green";
 
             setTimeout(() => {
-                window.location.href = 'home.html'; // Substitua '/home' pelo caminho da página inicial do seu site
+                window.location.href = 'home.html'; 
             }, 2000);
         } else {
             throw new Error(result.message || "Erro ao realizar a aposta.");
@@ -144,7 +144,7 @@ async function confirmBet() {
         const messageDiv = document.getElementById('message');
         messageDiv.textContent = error.message;
         messageDiv.style.color = "red";
-        console.error("Erro ao confirmar aposta:", error);  // Log do erro ao confirmar aposta
+        console.error("Erro ao confirmar aposta:", error);  
     }
 }
 
