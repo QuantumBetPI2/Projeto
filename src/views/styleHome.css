@@ -318,6 +318,13 @@ main {
     background: rgba(31, 41, 55, 0.8);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        flex-direction: column; 
+        height: 100%; 
+        text-align: center; 
+    
 }
 
 .highlights h2 {
@@ -374,6 +381,10 @@ main {
 
 /* Botão de Aposta */
 .bet-button {
+    display: flex; /* Habilita o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    height: 100%; /* Garante que o container ocupe toda a altura disponível */
     padding: 14px 28px; /* Aumenta o padding para um botão mais destacado */
     margin-top: 20px;
     border-radius: 6px; /* Borda mais suave */
