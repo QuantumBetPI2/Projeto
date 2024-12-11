@@ -46,3 +46,11 @@ CREATE TABLE events (
 Algumas partes do nosso código puxam o id do Admin que foi criado especificamente no nosso banco de dados, então se precisar adicionar o admin no banco de dados mude para o id do admin do seu BD, pois para dar evaluate e finish event só sera liberado se voce logar como admin, não sera possivel dar insert no banco de dados pois a senha é hasheada no bd
 
 Acredito que isso seja o necessario para o funcionamento do PI, todos as rotas estão funcionando perfeitamente e estão integradas com o banco de dados 
+
+como é possivel ver aqui no BD
+![image](https://github.com/user-attachments/assets/e6de4bab-d713-4971-ad44-453fa289bce4)
+
+e no código 
+![image](https://github.com/user-attachments/assets/bcac5418-1265-4bfe-92de-1f6b4c95f070)
+
+
