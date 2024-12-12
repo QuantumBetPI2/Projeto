@@ -13,8 +13,8 @@ async function connectToDatabase() {
 
 export namespace FinancialManager {
     export const addFunds = async (req: Request, res: Response): Promise<void> => {
-        const { amount } = req.body; // Apenas `amount` agora é recebido
-        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
+        const { amount } = req.body; 
+        const token = req.headers.authorization?.split(" ")[1]?.trim(); 
     
         console.log("Token recebido no cabeçalho:", req.headers.authorization);
         console.log("Token extraído:", token);
@@ -71,7 +71,7 @@ export namespace FinancialManager {
 
     export const withdrawFunds = async (req: Request, res: Response): Promise<void> => {
         const { amount, bankDetails } = req.body;
-        const token = req.headers.authorization?.split(" ")[1]?.trim(); // Extrair o token do header de Authorization
+        const token = req.headers.authorization?.split(" ")[1]?.trim(); 
     
         if (!token) {
             res.status(401).json({ message: "Token não fornecido." });
@@ -99,23 +99,23 @@ export namespace FinancialManager {
                 connection = await connectToDatabase();
                 console.log('Conexão com o banco de dados estabelecida com sucesso.');
     
-                // Definir o tipo para o resultado da consulta, que é um array de arrays de números
+               
                 const result = await connection.execute(
                     `SELECT amount FROM FUNDS WHERE user_id = :user_id`,
                     { user_id }
-                ) as { rows: [number[]] }; // Definindo que rows é um array de arrays de números
+                ) as { rows: [number[]] }; 
     
-                console.log(result); // Mostrar o resultado da consulta para depuração
+                console.log(result); 
     
-                // Verificar se result.rows está definido e não está vazio
+               
                 if (!result.rows?.length) {
                     console.log(`Nenhum valor encontrado para o usuário com ID: ${user_id}`);
                     res.status(400).json({ message: 'Usuário não encontrado ou saldo inexistente.' });
                     return;
                 }
     
-                // Acessar o saldo da primeira linha e primeira coluna
-                const currentBalance = result.rows[0][0]; // Acessando o valor do saldo
+               
+                const currentBalance = result.rows[0][0];
     
                 if (currentBalance === undefined || typeof currentBalance !== 'number') {
                     console.log(`Saldo inválido recuperado: ${currentBalance}`);
@@ -186,14 +186,14 @@ export namespace FinancialManager {
                     { user_id }
                 ) as { rows: [number[]] };
 
-                // Verificar se a consulta retornou algum valor
+                
                 if (!result.rows?.length) {
                     console.log(`Nenhum saldo encontrado para o usuário com ID: ${user_id}`);
                     res.status(404).json({ message: 'Usuário não encontrado ou saldo inexistente.' });
                     return;
                 }
 
-                // Acessar o saldo da primeira linha e primeira coluna
+               
                 const currentBalance = result.rows[0][0];
 
                 if (currentBalance === undefined || typeof currentBalance !== 'number') {
