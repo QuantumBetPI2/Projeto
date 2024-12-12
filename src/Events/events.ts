@@ -27,7 +27,7 @@ export namespace EventsHandler {
   
     // Handler para adicionar um novo evento
     export const addNewEvent = async (req: Request, res: Response): Promise<void> => {
-        const token = req.headers['authorization']?.split(' ')[1]; // Token no formato Bearer
+        const token = req.headers['authorization']?.split(' ')[1]; 
     
         if (!token) {
             res.status(401).send('Token não fornecido.');
@@ -64,9 +64,9 @@ export namespace EventsHandler {
                  VALUES (:title, :description, :event_date, 'pending', :creatorId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
                 {
                     title,
-                    description: description || null, // Permitir que a descrição seja nula
-                    event_date: new Date(event_date), // Garantir que a data seja um objeto Date
-                    creatorId // O ID do criador extraído do token
+                    description: description || null, 
+                    event_date: new Date(event_date), 
+                    creatorId
                 },
                 { autoCommit: true }
             );
@@ -137,7 +137,7 @@ export namespace EventsHandler {
     };
     
     export const moderateEvent = async (req: Request, res: Response): Promise<void> => {
-        const token = req.headers['authorization']?.split(' ')[1]; // Supondo o formato Bearer {token}
+        const token = req.headers['authorization']?.split(' ')[1]; 
     
         if (!token) {
             res.status(401).send("Token não fornecido.");
@@ -145,7 +145,7 @@ export namespace EventsHandler {
         }
     
         try {
-            // Decodifica o token para obter o ID do usuário
+           
             const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
             const userId = decoded.id;
     
@@ -161,7 +161,7 @@ export namespace EventsHandler {
             try {
                 connection = await connectToDatabase();
     
-                // Determina o status com base na ação recebida
+              
                 let status: string;
                 if (action === "approved") {
                     status = "approved";
@@ -172,7 +172,7 @@ export namespace EventsHandler {
                     return;
                 }
     
-                // Atualiza o status do evento
+             
                 const updateStatusResult: Result<any> = await connection.execute(
                     `UPDATE events SET status = :status, updated_at = CURRENT_TIMESTAMP WHERE id = :eventId`,
                     { status, eventId },
@@ -184,7 +184,7 @@ export namespace EventsHandler {
                     return;
                 }
     
-                // Se rejeitado, atualiza a descrição e registra o motivo
+              
                 if (status === "rejected" && reason) {
                     await connection.execute(
                         `UPDATE events SET description = :reason WHERE id = :eventId`,
@@ -201,16 +201,16 @@ export namespace EventsHandler {
                     const eventRows = eventResult.rows as unknown;
 
                         if (Array.isArray(eventRows) && eventRows.length > 0) {
-                            // Garantindo que eventRows seja um array de arrays com números
-                            const creatorId = (eventRows[0] as EventResult).creator_id; // Acessa o creator_id do evento
+                            
+                            const creatorId = (eventRows[0] as EventResult).creator_id; 
                         } else {
                             res.status(404).json({ message: "Evento não encontrado." });
                             return;
                         }
     
-                    const creatorId = eventRows[0][0]; // Obtém o creator_id do evento
+                    const creatorId = eventRows[0][0]; 
     
-                    // Agora buscamos o email do criador usando o creator_id
+                  
                     const userResult: Result<UserResult> = await connection.execute(
                         `SELECT email FROM accounts WHERE id = :creatorId`,
                         { creatorId }
@@ -219,15 +219,15 @@ export namespace EventsHandler {
                     const userRows = userResult.rows as unknown;
 
                     if (Array.isArray(userRows) && userRows.length > 0) {
-                        const userEmail = (userRows[0] as UserResult).email; // Acessa o email do criador
+                        const userEmail = (userRows[0] as UserResult).email; 
                     } else {
                         res.status(404).json({ message: "Criador do evento não encontrado." });
                         return;
                     }
                         
-                    const userEmail = userRows[0][0]; // Acessa o email do criador
+                    const userEmail = userRows[0][0]; 
     
-                    // Envia o e-mail para o criador
+                   
                     await sendRejectionEmail(userEmail, reason);
                 }
     
@@ -258,11 +258,11 @@ export namespace EventsHandler {
         const { eventId, id } = req.body;
         let connection;
     
-        // Verificar se eventId e id foram fornecidos
+      
         if (!eventId || !id) {
             console.error('Parâmetros ausentes: eventId ou id não fornecido');
             res.status(400).json({ message: 'eventId e id são obrigatórios.' });
-            return; // Aqui está correto, pois precisamos parar a execução se algum parâmetro estiver faltando
+            return; 
         }
     
         try {
@@ -272,7 +272,6 @@ export namespace EventsHandler {
             connection = await connectToDatabase();
             console.log('Conectando ao banco de dados...');
     
-            // Verificar se o evento existe
             const eventResult = await connection.execute(
                 `SELECT * FROM EVENTS WHERE id = :eventId`,
                 [eventId]
@@ -286,23 +285,23 @@ export namespace EventsHandler {
                 return; // Aqui também é necessário retornar para evitar continuar o processamento
             }
     
-            // Verificar se o moderador tem permissão (ID fixo 163)
+           
             if (id !== 163) {
                 console.error('Moderador não tem permissão para deletar este evento');
                 res.status(403).json({ message: 'Você não tem permissão para deletar este evento.' });
                 return;
             }
     
-            // Atualizar o status do evento para 'deleted'
+      
             const updateResult = await connection.execute(
                 `UPDATE EVENTS SET status = 'deleted' WHERE id = :eventId`,
                 [eventId],
-                { autoCommit: true } // Assegura que a atualização seja confirmada
+                { autoCommit: true } 
             );
     
             console.log('Resultado da atualização no banco de dados:', updateResult);
     
-            // Verificar se o evento foi atualizado corretamente
+          
             if (updateResult.rowsAffected === 0) {
                 console.error('Erro ao atualizar o evento: Nenhuma linha afetada');
                 res.status(500).json({ message: 'Erro ao atualizar o evento.' });
@@ -310,7 +309,7 @@ export namespace EventsHandler {
             }
     
             console.log('Evento deletado com sucesso.');
-            res.json({ message: 'Evento deletado com sucesso.' }); // Resposta final
+            res.json({ message: 'Evento deletado com sucesso.' }); 
     
         } catch (error) {
             console.error('Erro ao tentar deletar o evento:', error);
@@ -332,20 +331,20 @@ export namespace EventsHandler {
         id: number;
         title: string;
         description: string;
-        event_date: Date; // Assuming event_date is a Date object
+        event_date: Date; 
         status: string;
-        created_at: Date; // Assuming created_at is a Date object
-        updated_at: Date; // Assuming updated_at is a Date object
+        created_at: Date; 
+        updated_at: Date; 
     }
     
     export const searchEvents = async (req: Request, res: Response): Promise<void> => {
-        const keyword = req.query.keyword as string; // Palavra-chave de busca vinda da URL
+        const keyword = req.query.keyword as string; 
         let connection;
     
         try {
             connection = await connectToDatabase();
     
-            // Consulta ao banco de dados com LIKE para busca por título ou descrição
+          
             const result = await connection.execute(
                 `SELECT id, title, 
                         DBMS_LOB.SUBSTR(description, 4000, 1) AS description, -- Lê até 4000 caracteres do CLOB
@@ -353,28 +352,28 @@ export namespace EventsHandler {
                  FROM events 
                  WHERE LOWER(title) LIKE LOWER(:keyword) 
                  OR LOWER(description) LIKE LOWER(:keyword)`,
-                { keyword: `%${keyword}%` }, // Adiciona os '%' manualmente para evitar confusão
-                { outFormat: OracleDB.OUT_FORMAT_OBJECT } // Formato objeto para evitar circularidade
+                { keyword: `%${keyword}%` }, 
+                { outFormat: OracleDB.OUT_FORMAT_OBJECT } 
             );
     
-            // Verifica se existem eventos retornados
+         
             if (!result.rows || result.rows.length === 0) {
                 res.status(404).json({ message: "Nenhum evento encontrado." });
                 return;
             }
     
-            // Mapeamento simples dos eventos retornados
+          
             const events = result.rows.map((row: any) => ({
                 id: row.ID,
                 title: row.TITLE,
-                description: row.DESCRIPTION, // Agora é uma string
+                description: row.DESCRIPTION, 
                 event_date: row.EVENT_DATE,
                 status: row.STATUS,
                 created_at: row.CREATED_AT,
                 updated_at: row.UPDATED_AT
             }));
     
-            // Retorna os eventos encontrados
+           
             res.status(200).json(events);
         } catch (error) {
             console.error("Erro ao buscar eventos:", error);
@@ -392,11 +391,11 @@ export namespace EventsHandler {
 
     // Definição de tipos
 interface UserResult {
-    id: number; // ou string, dependendo da sua configuração
+    id: number; 
 }
 
 interface FundsResult {
-    sum: number | null; // Pode ser null se não houver fundos
+    sum: number | null; 
 }
 
 export const betOnEvent = async (req: Request, res: Response): Promise<void> => {
@@ -431,7 +430,7 @@ export const betOnEvent = async (req: Request, res: Response): Promise<void> => 
 
         console.log("Resultado da consulta ao saldo do usuário:", fundsResult);
 
-        // Verifica se há resultados e se o saldo é válido
+     
         if (!fundsResult.rows || fundsResult.rows.length === 0 || fundsResult.rows[0] === null) {
             console.error("Saldo não encontrado ou inválido para o usuário:", fundsResult.rows);
             res.status(400).json({ message: "Saldo não encontrado para o usuário." });
@@ -448,7 +447,7 @@ export const betOnEvent = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        // Insere a aposta na tabela BETS
+      
         const betInsertResult = await connection.execute(
             `INSERT INTO bets (user_id, event_id, amount, statusBet) VALUES (:user_id, :event_id, :amount, :statusBet)`,
             { user_id, event_id, amount, statusBet },
@@ -457,7 +456,7 @@ export const betOnEvent = async (req: Request, res: Response): Promise<void> => 
 
         console.log("Aposta inserida com sucesso:", betInsertResult);
 
-        // Deduz o valor da aposta do saldo do usuário
+    
         const updateFundsResult = await connection.execute(
             `UPDATE funds SET amount = amount - :amount WHERE user_id = :user_id`,
             { amount, user_id },
@@ -551,12 +550,12 @@ export const finishEvent = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        // Calcula a odd proporcional
+  
         const odds = totalAmount / totalWinningAmount;
 
-        // Distribui os ganhos proporcionalmente
+       
         for (const winner of winningBets) {
-            const prize = winner.amount * odds; // Cálculo do prêmio com base na odd proporcional
+            const prize = winner.amount * odds; 
 
             await connection.execute(`
                 UPDATE funds SET amount = amount + :prize WHERE user_id = :user_id
@@ -588,14 +587,13 @@ export const getEvents = async (req: Request, res: Response): Promise<void> => {
     try {
         connection = await connectToDatabase();
 
-        // Consulta ao banco de dados para pegar todos os eventos
         const result = await connection.execute(
             `SELECT id, title, 
                     DBMS_LOB.SUBSTR(description, 4000, 1) AS description, -- Lê até 4000 caracteres do CLOB
                     event_date, status, created_at, updated_at 
              FROM events`,
             [],
-            { outFormat: OracleDB.OUT_FORMAT_OBJECT } // Formato objeto para evitar circularidade
+            { outFormat: OracleDB.OUT_FORMAT_OBJECT } 
         );
 
         // Verifica se existem eventos retornados
@@ -604,7 +602,7 @@ export const getEvents = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Mapeamento simples dos eventos retornados
+      
         const events = result.rows.map((row: any) => ({
             id: row.ID,
             title: row.TITLE,
@@ -615,7 +613,7 @@ export const getEvents = async (req: Request, res: Response): Promise<void> => {
             updated_at: row.UPDATED_AT
         }));
 
-        // Retorna os eventos encontrados
+      
         res.status(200).json(events);
     } catch (error) {
         console.error("Erro ao buscar eventos:", error);
