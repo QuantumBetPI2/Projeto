@@ -52,6 +52,7 @@ e no código:
 ![image](https://github.com/user-attachments/assets/bcac5418-1265-4bfe-92de-1f6b4c95f070)
 
 
+ps: alguns codigos js estão direto no html
 
 
 Acredito que isso seja o necessario para o funcionamento do PI, todos as rotas estão funcionando perfeitamente e estão integradas com o banco de dados 
