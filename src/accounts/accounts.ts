@@ -135,11 +135,11 @@ export namespace AccountsHandler {
   
               console.log("Login bem-sucedido!", token);
   
-              // Verificar se é o admin e redirecionar
+              
               if (user.email === 'aDmin@gmail.com') {
-                  // Aqui você pode enviar uma resposta que indique que é um admin
+              
                   res.status(200).json({ message: 'Login realizado com sucesso! Você é um Admin.', token });
-                  // Redirecionamento específico do lado do cliente deve ser feito no frontend
+                
               } else {
                   res.status(200).json({ message: 'Login realizado com sucesso!', token });
               }
