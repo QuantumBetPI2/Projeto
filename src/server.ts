@@ -19,8 +19,8 @@ app.use(express.json());
 
 app.use(cors({
     origin: '*',
-    methods: ['GET', 'POST', 'DELETE'],  // Adicione os métodos necessários
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Adicione os cabeçalhos que você espera
+    methods: ['GET', 'POST', 'DELETE'],  
+    allowedHeaders: ['Content-Type', 'Authorization'],  
     credentials: true
 }));
 
