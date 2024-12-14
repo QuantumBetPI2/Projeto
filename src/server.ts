@@ -2,7 +2,7 @@ import express from "express";
 import { Request, Response, Router } from "express";
 import { AccountsHandler } from "./accounts/accounts";
 import { FinancialManager } from "./Financial/financial";
-import { EventsHandler } from "./Events/events"; // Importar o EventsHandler
+import { EventsHandler } from "./Events/events"; 
 import cors from 'cors';
 
 
