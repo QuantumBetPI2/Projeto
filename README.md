@@ -1,4 +1,4 @@
-# Pi 2 projeto integrador
+# Pi 2 projeto integrador- TIME 2
 Algumas explicações:
 Conta do Admin:
 -Admin@gmail.com
