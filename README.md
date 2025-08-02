@@ -3,7 +3,7 @@ Algumas explicações:
 Conta do Admin:
 -Admin@gmail.com
 senha: 123 
-username: Admin_pi
+username: (Admin_pi)
 
 TABELAS DO BANCO: 
 CREATE TABLE bets (
